@@ -35,7 +35,7 @@ class SoundService(Node):
         self.play_state = {}  # 상태 변경시 한번만 실행하기 위한 플래그
         self.subscription_map = {}
         
-        self._register_subcrice(self.sound_list)
+        self._register_subscribe(self.sound_list)
           
     def _listener_service_status(self, status: ServiceStatus) -> None:
         """
@@ -230,7 +230,7 @@ class SoundService(Node):
         #     print(f"Desired topic '{desired_topic}' is NOT registered.")
         #     return False
 
-    def _register_subcrice(self, sound_list) -> None:
+    def _register_subscribe(self, sound_list) -> None:
         """        
         Register a callback function.
 
