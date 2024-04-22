@@ -55,7 +55,9 @@ class SoundService(Node):
         try:
             sound_list = list(filter(lambda sl: sl.code in {DEFINE.sound_code_1001,
                                                             DEFINE.sound_code_1002,
-                                                            DEFINE.sound_code_1004},
+                                                            DEFINE.sound_code_1003,
+                                                            DEFINE.sound_code_1004,
+                                                            DEFINE.sound_code_1006},
                                      self.sound_list))
             get_logger(self.get_name()).debug("_listener_service_status  sound_list: " + str(sound_list))
             self._play_sound(status.task[0].status if status.task else None, sound_list)
@@ -82,8 +84,8 @@ class SoundService(Node):
             # if (status.code not in {DEFINE.DRV_CROSS, DEFINE.DRV_PARKING}):
             #     status.code = DEFINE.SIREN
             
-            sound_list = list(filter(lambda sl: sl.code in {DEFINE.sound_code_1003,
-                                                            DEFINE.sound_code_2002},
+            sound_list = list(filter(lambda sl: sl.code in {DEFINE.sound_code_1005,
+                                                            DEFINE.sound_code_2003},
                                      self.sound_list))
             self._play_sound(status.code, sound_list)
                 
@@ -105,7 +107,7 @@ class SoundService(Node):
         get_logger(self.get_name()).debug("_listener_rtb_status : " + str(status))
 
         try:            
-            sound_list = list(filter(lambda sl: sl.code in {DEFINE.sound_code_1005}, 
+            sound_list = list(filter(lambda sl: sl.code in {DEFINE.sound_code_1007}, 
                                      self.sound_list))
             self._play_sound(str(status.drive_status), sound_list)
                             
@@ -126,14 +128,14 @@ class SoundService(Node):
         """    
         get_logger(self.get_name()).debug("_listener_obstacle_status : " + str(status))
        
-        try:
-            
-            if ( status.obstacle_status not in {0, 2}):
+        try:            
+            if(status.obstacle_value is False):
                 return
              
-            sound_list = list(filter(lambda sl: sl.code in {DEFINE.sound_code_2001},
+            sound_list = list(filter(lambda sl: sl.code in {DEFINE.sound_code_2001,
+                                                            DEFINE.sound_code_2002},
                                      self.sound_list))
-            self._play_sound(status.obstacle_value, sound_list) 
+            self._play_sound(status.obstacle_status, sound_list) 
                 
         except Exception as e:
             get_logger(self.get_name()).error("_listener_obstacle_status : " + str(e))      
@@ -183,14 +185,15 @@ class SoundService(Node):
 
         """         
         try:    
+            get_logger(self.get_name()).debug("_play_sound msg_status : " + str(msg_status) + " / " + str(sound_list))
             if (msg_status is None):
                 return
-            
+           
             for snd in sound_list:
                 if (str(msg_status) in snd.status):                       
                     if (snd.count == "state" and self.play_state[snd.code] is False):  # 상태 변경 시 에만 출력 된다.
-                     #   get_logger(self.get_name()).info("_play_sound : " + str(snd.count ) + str(self.play_state[snd.code] ))
-                        break
+                       #get_logger(self.get_name()).info("_play_sound : " + str(snd.count) + str(self.play_state[snd.code]))
+                       break
                        
                     self.play_state[snd.code] = False
                     get_logger(self.get_name()).info("_play_sound : " + str(snd.code) +
@@ -250,7 +253,7 @@ class SoundService(Node):
             topic = sound.topic
             self.play_state[sound.code] = True
             
-            # get_logger(self.get_name()).info("code : " + sound.code + " - topic :" + topic + "   => " +str(sound))
+            get_logger(self.get_name()).info("code : " + sound.code + " - topic :" + topic + "   => " +str(sound))
             
             if (self._check_topic_existence(topic) is True):
                 continue
@@ -259,7 +262,9 @@ class SoundService(Node):
             
             if (sound.code == DEFINE.sound_code_1001
                 or sound.code == DEFINE.sound_code_1002
-                    or sound.code == DEFINE.sound_code_1004):
+                or sound.code == DEFINE.sound_code_1003
+                or sound.code == DEFINE.sound_code_1004
+                or sound.code == DEFINE.sound_code_1006):
                 self.service_subscriber = self.create_subscription(
                     ServiceStatus, 
                     topic,  
@@ -267,7 +272,7 @@ class SoundService(Node):
                     qos_profile                     
                 )                  
                           
-            elif (sound.code == DEFINE.sound_code_1005):
+            elif (sound.code == DEFINE.sound_code_1007):
                 self.rtbstatus_subscriber = self.create_subscription(
                     RbtStatus, 
                     topic, 
@@ -275,8 +280,8 @@ class SoundService(Node):
                     qos_profile                   
                     )
     
-            elif (sound.code == DEFINE.sound_code_1003
-                    or sound.code == DEFINE.sound_code_2002):
+            elif (sound.code == DEFINE.sound_code_1005
+                    or sound.code == DEFINE.sound_code_2003):
                 self.drive_subscriber = self.create_subscription(
                         DriveState, 
                         topic, 
@@ -284,7 +289,8 @@ class SoundService(Node):
                         qos_profile 
                     )
           
-            elif (sound.code == DEFINE.sound_code_2001):
+            elif (sound.code == DEFINE.sound_code_2001
+                  or sound.code == DEFINE.sound_code_2001):
                 self.opstacle_subscriber = self.create_subscription(
                     ObstacleStatus, 
                     topic, 
