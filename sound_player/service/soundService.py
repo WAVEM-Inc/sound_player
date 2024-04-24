@@ -128,8 +128,8 @@ class SoundService(Node):
         """    
         get_logger(self.get_name()).debug("_listener_obstacle_status : " + str(status))
        
-        try:            
-            if(status.obstacle_value is False):
+        try:
+            if (status.obstacle_value is False):
                 return
              
             sound_list = list(filter(lambda sl: sl.code in {DEFINE.sound_code_2001,
@@ -166,7 +166,7 @@ class SoundService(Node):
             percentage = status.percentage
             
             if (percentage > warning_level):
-                self.sndPlayer.play_wav(sound_list[0].code, sound_list[0].priority)
+                self._play_sound(None, sound_list) 
         
         except Exception as e:
             get_logger(self.get_name()).error("_listener_battery_status : " + str(e))
@@ -186,11 +186,9 @@ class SoundService(Node):
         """         
         try:    
             get_logger(self.get_name()).debug("_play_sound msg_status : " + str(msg_status) + " / " + str(sound_list))
-            if (msg_status is None):
-                return
-           
+            
             for snd in sound_list:
-                if (str(msg_status) in snd.status):                       
+                if (msg_status is None or (str(msg_status) in snd.status)):                       
                     if (snd.count == "state" and self.play_state[snd.code] is False):  # 상태 변경 시 에만 출력 된다.
                        #get_logger(self.get_name()).info("_play_sound : " + str(snd.count) + str(self.play_state[snd.code]))
                        break
