@@ -29,6 +29,9 @@ class Config:
         self.sound_list = soundSet.sound                     
 
         self.code_list = dict(map(lambda obj: (obj.code, obj), self.sound_list))
+        
+        self.state_period = self.config["CONFIG"].getint("state_period")
+        self.volume = self.config["CONFIG"].get("sound_volume")
     
     def _load_option_file(self, filepath, filename):
         """
@@ -63,5 +66,10 @@ class Config:
     def get_sound_list(self):            
         return self.sound_list
 
+    def get_state_period(self):
+        return self.state_period
+    
+    def get_sound_volume(self):
+        return self.volume
 
 
