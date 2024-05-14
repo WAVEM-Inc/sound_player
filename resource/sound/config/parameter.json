@@ -83,10 +83,10 @@
 	{
       "code": "3001",
       "type": "msg",
-	  "count": "once",
+	  "count": "state",
 	  "topic": "/sensor/battery/state",
       "priority": 1,
-	"status" : ["90"]
+	  "status" : ["90"]
     }
   ]
 }
