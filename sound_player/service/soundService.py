@@ -10,7 +10,7 @@ from sensor_msgs.msg import BatteryState
 
 from ..config.config import Config
 from .play_sound import PlaySound
-from .define import define as DEFINE
+from ..config.define import define as DEFINE
 
 
 class SoundService(Node):
@@ -31,7 +31,8 @@ class SoundService(Node):
 
         conf = Config()
         self.sound_list = conf.get_sound_list()   
-
+        self.state_period = conf.get_state_period()
+        
         self.play_state = {}  # 상태 변경시 한번만 실행하기 위한 플래그
         self.subscription_map = {}
         
@@ -78,12 +79,12 @@ class SoundService(Node):
         Raises:
 
         """   
-        get_logger(self.get_name()).debug("_listener_drive_info : " + str(status))
-        
         try:
-            # if (status.code not in {DEFINE.DRV_CROSS, DEFINE.DRV_PARKING}):
-            #     status.code = DEFINE.SIREN
+            get_logger(self.get_name()).debug("_listener_drive_info : " + str(status))
+            if ((status.speaker % self.state_period) != 0):  # drive info의 index와 Drive Info 주기를 계산하여 1초에 한번 출력되도록 한다.
+                return
             
+            #get_logger(self.get_name()).info("(status.speaker % self.state_period): " + str((status.speaker % self.state_period)) + " / "+status.code)
             sound_list = list(filter(lambda sl: sl.code in {DEFINE.sound_code_1005,
                                                             DEFINE.sound_code_2003},
                                      self.sound_list))
@@ -128,8 +129,8 @@ class SoundService(Node):
         """    
         get_logger(self.get_name()).debug("_listener_obstacle_status : " + str(status))
        
-        try:            
-            if(status.obstacle_value is False):
+        try:
+            if (status.obstacle_value is False):
                 return
              
             sound_list = list(filter(lambda sl: sl.code in {DEFINE.sound_code_2001,
@@ -161,13 +162,14 @@ class SoundService(Node):
             if not sound_list:
                 get_logger(self.get_name()).error("not found battery code in sound option list : ")
                 return
-            
-            warning_level = float(sound_list[0].status[0])   # 배터리 한계 기준 값
+            warning_level = sound_list[0].status[0] # 배터리 한계 기준 값
             percentage = status.percentage
             
-            if (percentage > warning_level):
-                self.sndPlayer.play_wav(sound_list[0].code, sound_list[0].priority)
-        
+            if (percentage >= float(warning_level)):
+                self._play_sound(str(warning_level), sound_list) 
+            else:
+                self._play_sound(None, sound_list) # 출력되지 않을 조건
+                    
         except Exception as e:
             get_logger(self.get_name()).error("_listener_battery_status : " + str(e))
 
@@ -186,14 +188,12 @@ class SoundService(Node):
         """         
         try:    
             get_logger(self.get_name()).debug("_play_sound msg_status : " + str(msg_status) + " / " + str(sound_list))
-            if (msg_status is None):
-                return
-           
+            
             for snd in sound_list:
-                if (str(msg_status) in snd.status):                       
+                if (str(msg_status) in snd.status):
                     if (snd.count == "state" and self.play_state[snd.code] is False):  # 상태 변경 시 에만 출력 된다.
-                       #get_logger(self.get_name()).info("_play_sound : " + str(snd.count) + str(self.play_state[snd.code]))
-                       break
+                        #get_logger(self.get_name()).info("_play_sound : "+str(snd.count)+str(self.play_state[snd.code]))
+                        break
                        
                     self.play_state[snd.code] = False
                     get_logger(self.get_name()).info("_play_sound : " + str(snd.code) +
@@ -201,6 +201,7 @@ class SoundService(Node):
                     self.sndPlayer.play_wav(snd.code, snd.priority)
                     break
                 elif (snd.count == "state"):  # 플레이 조건은 아닌데 count 가 "state" 이면 다음 조건에 도달시 플레이 되도록 True로 변경
+                    get_logger(self.get_name()).debug("플레이 조건은 아닌데 count 가 state 이면 다음 조건에 도달시 플레이 되도록 True로 변경")
                     self.play_state[snd.code] = True
                 
         except Exception as e:
