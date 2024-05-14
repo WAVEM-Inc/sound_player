@@ -131,13 +131,17 @@ class SoundService(Node):
        
         try:
             if (status.obstacle_value is False):
+                
                 return
              
             sound_list = list(filter(lambda sl: sl.code in {DEFINE.sound_code_2001,
                                                             DEFINE.sound_code_2002},
                                      self.sound_list))
-            self._play_sound(status.obstacle_status, sound_list) 
-                
+            if (status.obstacle_value is True):
+                self._play_sound(status.obstacle_status, sound_list) 
+            else:
+                self._play_sound(None, sound_list)  # 출력되지 않을 조건
+                    
         except Exception as e:
             get_logger(self.get_name()).error("_listener_obstacle_status : " + str(e))      
     
