@@ -2,6 +2,7 @@ import configparser
 import os
 import pygame
 from ..config.define import define as DEFINE
+from rclpy.logging import get_logger
 
 
 class PlaySound:
@@ -25,20 +26,21 @@ class PlaySound:
         # Pygame 초기화
         pygame.init()
     
-        self.volume = DEFINE.sound_vloume_max   # default value - max volume
+        # self.volume = DEFINE.sound_vloume_max   # default value - max volume
         
-        try:                    
-            self.volume = self.config["CONFIG"].get("sound_volume")
-            print("volume -- " + str(self.volume))
+        # try:                    
+        #     self.volume = self.config["CONFIG"].get("sound_volume")
+        #     # print("volume -- " + str(self.volume))
+        #     get_logger(self.get_name()).info("volume -- " + str(self.volume))
             
-            if (self.volume is None or self.volume.isdecimal() is False or self.volume > "10"):
-                self.volume = DEFINE.sound_vloume_max
-            elif (self.volume < "0"):
-                self.volume = 0
-        except Exception as e:
-            print(str(e))
+        #     if (self.volume is None or self.volume.isdecimal() is False or self.volume > "10"):
+        #         self.volume = DEFINE.sound_vloume_max
+        #     elif (self.volume < "0"):
+        #         self.volume = 0
+        # except Exception as e:
+        #     print(str(e))
                        
-        pygame.mixer.music.set_volume(float(self.volume)/10.0)
+        # pygame.mixer.music.set_volume(float(self.volume)/10.0)
     
     def __del__(self):
         pygame.quit()
@@ -64,5 +66,5 @@ class PlaySound:
             print(str(e))
             return None        
         
-        #finally:            
-            #pygame.quit()
+        # finally:            
+            # pygame.quit()

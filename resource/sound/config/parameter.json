@@ -59,23 +59,23 @@
 	{
       "code": "2001",
       "type": "msg",
-	  "count": "once",
+	  "count": "state",
 	  "topic": "/drive/obstacle/event",
       "priority": 2,
-	  "status" : ["True"]
+	  "status" : ["0","1"]
     },	
     {
         "code": "2002",
         "type": "msg",
-        "count": "once",
+        "count": "state",
         "topic": "/drive/obstacle/event",
         "priority": 2,
-        "status" : ["True"]
+        "status" : ["2"]
     },	
 	{
       "code": "2003",
       "type": "msg",
-	  "count": "once",
+	  "count": "state",
 	  "topic": "/drive/info",
       "priority": 1,
 	  "status" : ["crossroads","parking"]

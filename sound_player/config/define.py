@@ -39,5 +39,7 @@ class define:
     sound_vloume_max = "10"
         
     SIREN = "siren"
+    STRAIGHT = "straight"
+    RECOVERY = "recovery"
     
 

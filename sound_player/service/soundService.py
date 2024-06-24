@@ -7,6 +7,7 @@ from ktp_data_msgs.msg import ServiceStatus
 from ktp_data_msgs.msg import Status as RbtStatus
 from obstacle_msgs.msg import Status as ObstacleStatus
 from sensor_msgs.msg import BatteryState
+from std_msgs.msg import String
 
 from ..config.config import Config
 from .play_sound import PlaySound
@@ -81,17 +82,40 @@ class SoundService(Node):
         """   
         try:
             get_logger(self.get_name()).debug("_listener_drive_info : " + str(status))
-            if ((status.speaker % self.state_period) != 0):  # drive info의 index와 Drive Info 주기를 계산하여 1초에 한번 출력되도록 한다.
+            if ((status.speaker % self.state_period) != 0):  # drive info의 index와 Drive Info 주기를 계산하여 지정 주기당 한번 출력.
                 return
-            
-            #get_logger(self.get_name()).info("(status.speaker % self.state_period): " + str((status.speaker % self.state_period)) + " / "+status.code)
+                        
             sound_list = list(filter(lambda sl: sl.code in {DEFINE.sound_code_1005,
                                                             DEFINE.sound_code_2003},
                                      self.sound_list))
             self._play_sound(status.code, sound_list)
+            
+            if (status.code == DEFINE.STRAIGHT or status.code == DEFINE.RECOVERY):
+                self._play_sound(None, sound_list)
                 
         except Exception as e:
             get_logger(self.get_name()).error("_listener_drive_info : " + str(e))
+                       
+    def _listener_error_info(self, msg: String) -> None:
+        """
+        callback function for Error
+
+        Args:
+            status : topic message
+
+        Returns:
+           
+        Raises:
+
+        """   
+        try:
+            get_logger(self.get_name()).info("_listener_error_info : " + str(msg))
+            sound_list = list(filter(lambda sl: sl.code in {DEFINE.sound_code_1020},self.sound_list))
+            self._play_sound(msg.data, sound_list)
+                         
+        except Exception as e:
+            get_logger(self.get_name()).error("_listener_error_info : " + str(e))        
+            
 
     def _listener_rtb_status(self, status: RbtStatus) -> None:
         """
@@ -130,15 +154,11 @@ class SoundService(Node):
         get_logger(self.get_name()).debug("_listener_obstacle_status : " + str(status))
        
         try:
-            if (status.obstacle_value is False):
-                
-                return
-             
             sound_list = list(filter(lambda sl: sl.code in {DEFINE.sound_code_2001,
                                                             DEFINE.sound_code_2002},
                                      self.sound_list))
             if (status.obstacle_value is True):
-                self._play_sound(status.obstacle_status, sound_list) 
+                self._play_sound(status.obstacle_status, sound_list)  
             else:
                 self._play_sound(None, sound_list)  # 출력되지 않을 조건
                     
@@ -166,13 +186,13 @@ class SoundService(Node):
             if not sound_list:
                 get_logger(self.get_name()).error("not found battery code in sound option list : ")
                 return
-            warning_level = sound_list[0].status[0] # 배터리 한계 기준 값
-            percentage = status.percentage
+            warning_level = sound_list[0].status[0]  # 배터리 한계 기준 값
+            percentage = status.voltage
             
             if (percentage >= float(warning_level)):
                 self._play_sound(str(warning_level), sound_list) 
             else:
-                self._play_sound(None, sound_list) # 출력되지 않을 조건
+                self._play_sound(None, sound_list)  # 출력되지 않을 조건
                     
         except Exception as e:
             get_logger(self.get_name()).error("_listener_battery_status : " + str(e))
@@ -196,8 +216,8 @@ class SoundService(Node):
             for snd in sound_list:
                 if (str(msg_status) in snd.status):
                     if (snd.count == "state" and self.play_state[snd.code] is False):  # 상태 변경 시 에만 출력 된다.
-                        #get_logger(self.get_name()).info("_play_sound : "+str(snd.count)+str(self.play_state[snd.code]))
-                        break
+                        get_logger(self.get_name()).debug("_play_sound rejec: "+str(snd.count)+" / "+str(self.play_state[snd.code]))
+                        return
                        
                     self.play_state[snd.code] = False
                     get_logger(self.get_name()).info("_play_sound : " + str(snd.code) +
@@ -258,7 +278,7 @@ class SoundService(Node):
             topic = sound.topic
             self.play_state[sound.code] = True
             
-            get_logger(self.get_name()).info("code : " + sound.code + " - topic :" + topic + "   => " +str(sound))
+            get_logger(self.get_name()).info("code : " + sound.code + " - topic :" + topic + "   => " + str(sound))
             
             if (self._check_topic_existence(topic) is True):
                 continue
@@ -266,10 +286,10 @@ class SoundService(Node):
             self.subscription_map[topic] = True
             
             if (sound.code == DEFINE.sound_code_1001
-                or sound.code == DEFINE.sound_code_1002
-                or sound.code == DEFINE.sound_code_1003
-                or sound.code == DEFINE.sound_code_1004
-                or sound.code == DEFINE.sound_code_1006):
+                    or sound.code == DEFINE.sound_code_1002
+                    or sound.code == DEFINE.sound_code_1003
+                    or sound.code == DEFINE.sound_code_1004
+                    or sound.code == DEFINE.sound_code_1006):
                 self.service_subscriber = self.create_subscription(
                     ServiceStatus, 
                     topic,  
@@ -284,7 +304,7 @@ class SoundService(Node):
                     self._listener_rtb_status, 
                     qos_profile                   
                     )
-    
+
             elif (sound.code == DEFINE.sound_code_1005
                     or sound.code == DEFINE.sound_code_2003):
                 self.drive_subscriber = self.create_subscription(
@@ -293,7 +313,15 @@ class SoundService(Node):
                         self._listener_drive_info, 
                         qos_profile 
                     )
-          
+                
+            elif (sound.code == DEFINE.sound_code_1020):
+                self.drive_subscriber = self.create_subscription(
+                        String, 
+                        topic, 
+                        self._listener_error_info, 
+                        qos_profile 
+                    )
+                      
             elif (sound.code == DEFINE.sound_code_2001
                   or sound.code == DEFINE.sound_code_2001):
                 self.opstacle_subscriber = self.create_subscription(
@@ -313,7 +341,7 @@ class SoundService(Node):
             else:
                 get_logger(self.get_name()).error("topic : " + topic + " is an undefined topic.")
             
-            if ( self._check_topic_existence(topic) is True):
+            if (self._check_topic_existence(topic) is True):
                 get_logger(self.get_name()).info("topic : " + topic + "   (subscribe)")
 
         get_logger(self.get_name()).info("end subscribe") 
