@@ -59,7 +59,8 @@ class SoundService(Node):
                                                             DEFINE.sound_code_1002,
                                                             DEFINE.sound_code_1003,
                                                             DEFINE.sound_code_1004,
-                                                            DEFINE.sound_code_1006},
+                                                            DEFINE.sound_code_1006,
+                                                            DEFINE.sound_code_1020},
                                      self.sound_list))
             get_logger(self.get_name()).debug("_listener_service_status  sound_list: " + str(sound_list))
             self._play_sound(status.task[0].status if status.task else None, sound_list)
@@ -96,26 +97,25 @@ class SoundService(Node):
         except Exception as e:
             get_logger(self.get_name()).error("_listener_drive_info : " + str(e))
                        
-    def _listener_error_info(self, msg: String) -> None:
-        """
-        callback function for Error
+    # def _listener_error_info(self, msg: String) -> None:
+    #     """
+    #     callback function for Error
 
-        Args:
-            status : topic message
+    #     Args:
+    #         status : topic message
 
-        Returns:
+    #     Returns:
            
-        Raises:
+    #     Raises:
 
-        """   
-        try:
-            get_logger(self.get_name()).info("_listener_error_info : " + str(msg))
-            sound_list = list(filter(lambda sl: sl.code in {DEFINE.sound_code_1020},self.sound_list))
-            self._play_sound(msg.data, sound_list)
+    #     """   
+    #     try:
+    #         get_logger(self.get_name()).info("_listener_error_info : " + str(msg))
+    #         sound_list = list(filter(lambda sl: sl.code in {DEFINE.sound_code_1020},self.sound_list))
+    #         self._play_sound(msg.data, sound_list)
                          
-        except Exception as e:
-            get_logger(self.get_name()).error("_listener_error_info : " + str(e))        
-            
+    #     except Exception as e:
+    #         get_logger(self.get_name()).error("_listener_error_info : " + str(e))        
 
     def _listener_rtb_status(self, status: RbtStatus) -> None:
         """
@@ -314,13 +314,13 @@ class SoundService(Node):
                         qos_profile 
                     )
                 
-            elif (sound.code == DEFINE.sound_code_1020):
-                self.drive_subscriber = self.create_subscription(
-                        String, 
-                        topic, 
-                        self._listener_error_info, 
-                        qos_profile 
-                    )
+            # elif (sound.code == DEFINE.sound_code_1020):
+            #     self.drive_subscriber = self.create_subscription(
+            #             String, 
+            #             topic, 
+            #             self._listener_error_info, 
+            #             qos_profile 
+            #         )
                       
             elif (sound.code == DEFINE.sound_code_2001
                   or sound.code == DEFINE.sound_code_2001):
