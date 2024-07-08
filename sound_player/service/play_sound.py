@@ -22,9 +22,15 @@ class PlaySound:
         self.config.read(self.home_path + "/RobotData/sound/config/config.ini")
 
         self.file_path = self.home_path + self.config["CONFIG"].get("file_path")
+        
+        os.environ['SDL_AUDIODRIVER'] = 'alsa'
+        os.environ['AUDIODEV'] = 'plughw:0,3'
+
         self.play_priority = 100  # max priority for init value
+                
         # Pygame 초기화
         pygame.init()
+        pygame.mixer.init()
     
         # self.volume = DEFINE.sound_vloume_max   # default value - max volume
         
