@@ -23,15 +23,19 @@ class PlaySound:
 
         self.file_path = self.home_path + self.config["CONFIG"].get("file_path")
         
-        os.environ['SDL_AUDIODRIVER'] = 'alsa'
-        os.environ['AUDIODEV'] = 'plughw:0,3'
+        try:
+           os.environ['SDL_AUDIODRIVER'] = 'alsa'
+           os.environ['AUDIODEV'] = 'plughw:0,3'
 
-        self.play_priority = 100  # max priority for init value
+           self.play_priority = 100  # max priority for init value
                 
-        # Pygame 초기화
-        pygame.init()
-        pygame.mixer.init()
+           # Pygame 초기화
+           pygame.init()
+           pygame.mixer.init()
     
+        except Exception as e:
+            print(str(e))
+            return None   
         # self.volume = DEFINE.sound_vloume_max   # default value - max volume
         
         # try:                    
