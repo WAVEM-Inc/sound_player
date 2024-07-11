@@ -32,6 +32,7 @@ class Config:
         
         self.state_period = self.config["CONFIG"].getint("state_period")
         self.volume = self.config["CONFIG"].get("sound_volume")
+
     
     def _load_option_file(self, filepath, filename):
         """

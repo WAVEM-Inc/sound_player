@@ -1,102 +1,131 @@
 {
- "sound": [
-    {
-      "code": "1001",
-      "type": "msg",
-	  "count": "once",
-	  "topic": "/rms/ktp/data/service_status",
-      "priority": 3,
-	  "status" : ["DestArrived"]
-    },
-    {
-      "code": "1002",
-      "type": "msg",
-      "count": "once",
-      "topic": "/rms/ktp/data/service_status",
-      "priority": 3,
-      "status" : ["SourceArrived"]
-    },
-    {
-      "code": "1003",
-      "type": "msg",
-      "count": "once",
-      "topic": "/rms/ktp/data/service_status",
-      "priority": 3,
-      "status" : ["Started"]
-    },
-    {
-      "code": "1004",
-      "type": "msg",
-      "count": "once",
-      "topic": "/rms/ktp/data/service_status",
-      "priority": 3,
-      "status" : ["OnProgress"]
-    },
-    {
-      "code": "1005",
-      "type": "siren",
-      "count": "once",
-      "topic": "/drive/info",      
-      "priority": 4,
-      "status" : ["straight","recovery"]
-    },
-    {
-      "code": "1006",
-      "type": "msg",
-      "count": "once",
-      "topic": "/rms/ktp/data/service_status",
-      "priority": 3,
-      "status" : ["End"]
-    },
-    {
-      "code": "1020",
-      "type": "msg",
-      "count": "once",
-      "topic": "/rms/ktp/data/service_status",
-      "priority": 1,
-      "status" : ["Failed"]
-    },
-    {
-      "code": "1007",
-      "type": "msg",
-      "count": "state",
-      "topic": "/rms/ktp/data/rbt_status",
-      "priority": 3,
-      "status" : ["0"]
-    },
-    {
-      "code": "2001",
-      "type": "msg",
-      "count": "state",
-      "topic": "/drive/obstacle/event",
-      "priority": 2,
-      "status" : ["0","1"]
-    },	
-    {
-      "code": "2002",
-      "type": "msg",
-      "count": "state",
-      "topic": "/drive/obstacle/event",
-      "priority": 2,
-      "status" : ["2"]
-    },
-    {
-      "code": "2003",
-      "type": "msg",
-      "count": "state",
-      "topic": "/drive/info",
-      "priority": 1,
-      "status" : ["crossroads","parking"]
-    },	
-    {
-      "code": "3001",
-      "type": "msg",
-      "count": "state",
-      "topic": "/sensor/battery/state",
-      "priority": 1,
-      "status" : ["90"]
-    }
-  ]
-}
-
-
+  "sound": [
+     {
+       "code": "1001",
+       "type": "msg",
+       "count": "once",
+       "topic": "/rms/ktp/data/service_status",
+       "priority": 3,      
+       "status" : ["DestArrived"]
+     },
+     {
+       "code": "1002",
+       "type": "msg",
+       "count": "once",
+       "topic": "/rms/ktp/data/service_status",
+       "priority": 3,
+       "status" : ["SourceArrived"]
+     },
+     {
+       "code": "1003",
+       "type": "msg",
+       "count": "once",
+       "topic": "/rms/ktp/data/service_status",
+       "task_code": "delivering",
+       "priority": 3,
+       "status" : ["Started"]
+     },
+     {
+       "code": "1004",
+       "type": "msg",
+       "count": "once",
+       "topic": "/rms/ktp/data/service_status",
+       "priority": 3,
+       "status" : ["OnProgress"]
+     },
+     {
+       "code": "1005",
+       "type": "siren",
+       "count": "once",
+       "topic": "/drive/info",      
+       "priority": 4,
+       "status" : ["straight","recovery"]
+     },
+     {
+       "code": "1006",
+       "type": "msg",
+       "count": "once",
+       "topic": "/rms/ktp/data/service_status",
+       "task_code": "delivering",
+       "priority": 3,
+       "status" : ["End"]
+     },
+     {
+       "code": "1012",
+       "type": "msg",
+       "count": "once",
+       "topic": "/rms/ktp/data/service_status",
+       "priority": 3,
+       "task_code": "returning",
+       "status" : ["Started"]
+     },
+     {
+       "code": "1013",
+       "type": "msg",
+       "count": "once",
+       "topic": "/rms/ktp/data/service_status",
+       "task_code": "returning",
+       "priority": 3,
+       "status" : ["End"]
+     },
+     {
+       "code": "1020",
+       "type": "msg",
+       "count": "once",
+       "topic": "/rms/ktp/data/service_status",
+       "priority": 1,
+       "status" : ["Failed"]
+     },
+     {
+       "code": "1007",
+       "type": "msg",
+       "count": "state",
+       "topic": "/rms/ktp/data/rbt_status",
+       "priority": 3,
+       "status" : ["0"]
+     },
+     {
+       "code": "2001",
+       "type": "msg",
+       "count": "state",
+       "topic": "/drive/obstacle/event",
+       "priority": 2,
+       "status" : ["0","1"]
+     },	
+     {
+       "code": "2002",
+       "type": "msg",
+       "count": "state",
+       "topic": "/drive/obstacle/event",
+       "priority": 2,
+       "status" : ["2"]
+     },
+     {
+       "code": "2003",
+       "type": "msg",
+       "count": "state",
+       "topic": "/drive/info",
+       "priority": 1,
+       "status" : ["crossroads"]
+     },	
+     {
+       "code": "2004",
+       "type": "msg",
+       "count": "state",
+       "topic": "/drive/info",
+       "priority": 1,
+       "status" : ["parking"]
+     },	
+     {
+       "code": "3001",
+       "type": "msg",
+       "count": "state",
+       "topic": "/sensor/battery/state",
+       "priority": 1,
+       "status" : ["90"]
+     }
+   ]
+ }
+ 
+ 
+ 

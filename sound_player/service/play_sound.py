@@ -4,7 +4,6 @@ import pygame
 from ..config.define import define as DEFINE
 from rclpy.logging import get_logger
 
-
 class PlaySound:
     """
     Class that paly sound
@@ -17,15 +16,18 @@ class PlaySound:
 
     def __init__(self):
         self.home_path = os.path.expanduser("~")
-
         self.config = configparser.ConfigParser()
         self.config.read(self.home_path + "/RobotData/sound/config/config.ini")
 
         self.file_path = self.home_path + self.config["CONFIG"].get("file_path")
         
         try:
-           os.environ['SDL_AUDIODRIVER'] = 'alsa'
-           os.environ['AUDIODEV'] = 'plughw:0,3'
+          
+           if self.config["CONFIG"].get("SDL_AUDIODRIVER") is not None and self.config["CONFIG"].get("AUDIODEV") is not None :
+               os.environ['SDL_AUDIODRIVER'] = self.config["CONFIG"].get("SDL_AUDIODRIVER") #'alsa'
+               os.environ['AUDIODEV'] = self.config["CONFIG"].get("AUDIODEV") #'plughw:0,3'
+               print(str("SDL_AUDIODRIVER : " + str(self.config["CONFIG"].get("SDL_AUDIODRIVER")) + 
+                         " / AUDIODEV : " + str(self.config["CONFIG"].get("AUDIODEV"))))
 
            self.play_priority = 100  # max priority for init value
                 

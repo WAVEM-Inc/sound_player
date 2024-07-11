@@ -12,7 +12,7 @@ from std_msgs.msg import String
 from ..config.config import Config
 from .play_sound import PlaySound
 from ..config.define import define as DEFINE
-
+import os
 
 class SoundService(Node):
     """
@@ -33,7 +33,7 @@ class SoundService(Node):
         conf = Config()
         self.sound_list = conf.get_sound_list()   
         self.state_period = conf.get_state_period()
-        
+               
         self.play_state = {}  # 상태 변경시 한번만 실행하기 위한 플래그
         self.subscription_map = {}
         
@@ -60,10 +60,12 @@ class SoundService(Node):
                                                             DEFINE.sound_code_1003,
                                                             DEFINE.sound_code_1004,
                                                             DEFINE.sound_code_1006,
+                                                            DEFINE.sound_code_1012,
+                                                            DEFINE.sound_code_1013,
                                                             DEFINE.sound_code_1020},
                                      self.sound_list))
             get_logger(self.get_name()).debug("_listener_service_status  sound_list: " + str(sound_list))
-            self._play_sound(status.task[0].status if status.task else None, sound_list)
+            self._play_sound(status.task[0].task_code if status.task else None, status.task[0].status if status.task else None, sound_list)
             # self._play_sound(status.reserve, sound_list)
 
         except Exception as e:
@@ -87,12 +89,13 @@ class SoundService(Node):
                 return
                         
             sound_list = list(filter(lambda sl: sl.code in {DEFINE.sound_code_1005,
-                                                            DEFINE.sound_code_2003},
+                                                            DEFINE.sound_code_2003,
+                                                            DEFINE.sound_code_2004},
                                      self.sound_list))
-            self._play_sound(status.code, sound_list)
+            self._play_sound(None,status.code, sound_list)
             
             if (status.code == DEFINE.STRAIGHT or status.code == DEFINE.RECOVERY):
-                self._play_sound(None, sound_list)
+                self._play_sound(None,None, sound_list)
                 
         except Exception as e:
             get_logger(self.get_name()).error("_listener_drive_info : " + str(e))
@@ -134,7 +137,7 @@ class SoundService(Node):
         try:            
             sound_list = list(filter(lambda sl: sl.code in {DEFINE.sound_code_1007}, 
                                      self.sound_list))
-            self._play_sound(str(status.drive_status), sound_list)
+            self._play_sound(None,str(status.drive_status), sound_list)
                             
         except Exception as e:
             get_logger(self.get_name()).error("_listener_rtb_status : " + str(e))  
@@ -158,9 +161,9 @@ class SoundService(Node):
                                                             DEFINE.sound_code_2002},
                                      self.sound_list))
             if (status.obstacle_value is True):
-                self._play_sound(status.obstacle_status, sound_list)  
+                self._play_sound(None,status.obstacle_status, sound_list)  
             else:
-                self._play_sound(None, sound_list)  # 출력되지 않을 조건
+                self._play_sound(None,None, sound_list)  # 출력되지 않을 조건
                     
         except Exception as e:
             get_logger(self.get_name()).error("_listener_obstacle_status : " + str(e))      
@@ -190,14 +193,14 @@ class SoundService(Node):
             percentage = status.voltage
             
             if (percentage >= float(warning_level)):
-                self._play_sound(str(warning_level), sound_list) 
+                self._play_sound(None,str(warning_level), sound_list) 
             else:
-                self._play_sound(None, sound_list)  # 출력되지 않을 조건
+                self._play_sound(None,None, sound_list)  # 출력되지 않을 조건
                     
         except Exception as e:
             get_logger(self.get_name()).error("_listener_battery_status : " + str(e))
 
-    def _play_sound(self, msg_status, sound_list):
+    def _play_sound(self, task_code, msg_status, sound_list):
         """        
         play sound 
 
@@ -211,21 +214,24 @@ class SoundService(Node):
 
         """         
         try:    
-            get_logger(self.get_name()).debug("_play_sound msg_status : " + str(msg_status) + " / " + str(sound_list))
-            
+            get_logger(self.get_name()).info("_play_sound msg_status : " 
+                                              + str(msg_status) + " / " + str(task_code) + " / " + str(sound_list))            
             for snd in sound_list:
-                if (str(msg_status) in snd.status):
+                if (str(msg_status) in snd.status and (snd.task_code is None or str(task_code) == snd.task_code)):
                     if (snd.count == "state" and self.play_state[snd.code] is False):  # 상태 변경 시 에만 출력 된다.
-                        get_logger(self.get_name()).debug("_play_sound rejec: "+str(snd.count)+" / "+str(self.play_state[snd.code]))
+                        get_logger(self.get_name()).info("_play_sound rejec: " + str(snd.count)+" / " + str(self.play_state[snd.code]))
                         return
-                       
+                     
+                    get_logger(self.get_name()).info(" play_sound : " + str(snd.code) + " / " + str(task_code) +
+                                                     ",  priority : " + str(snd.priority) + "/"+str(self.play_state[snd.code]))  
                     self.play_state[snd.code] = False
-                    get_logger(self.get_name()).info("_play_sound : " + str(snd.code) +
-                                                     ",  priority : " + str(snd.priority))
+
                     self.sndPlayer.play_wav(snd.code, snd.priority)
                     break
                 elif (snd.count == "state"):  # 플레이 조건은 아닌데 count 가 "state" 이면 다음 조건에 도달시 플레이 되도록 True로 변경
                     get_logger(self.get_name()).debug("플레이 조건은 아닌데 count 가 state 이면 다음 조건에 도달시 플레이 되도록 True로 변경")
+                    get_logger(self.get_name()).info(" reset : " + str(snd.code) + " / " + str(task_code) +
+                                                  ",  priority : " + str(snd.priority) + "/"+str(self.play_state[snd.code]))
                     self.play_state[snd.code] = True
                 
         except Exception as e:
