@@ -1,22 +1,25 @@
 {
   "sound": [
      {
+       "group" : "service_status",
        "code": "1001",
        "type": "msg",
        "count": "once",
        "topic": "/rms/ktp/data/service_status",
        "priority": 3,      
-       "status" : ["DestArrived"]
+       "status" : ["SourceArrived"]
      },
-     {
+     {    
+       "group" : "service_status",
        "code": "1002",
        "type": "msg",
        "count": "once",
        "topic": "/rms/ktp/data/service_status",
        "priority": 3,
-       "status" : ["SourceArrived"]
+       "status" : ["DestArrived"]
      },
      {
+       "group" : "service_status",
        "code": "1003",
        "type": "msg",
        "count": "once",
@@ -26,23 +29,17 @@
        "status" : ["Started"]
      },
      {
+       "group" : "service_status",
        "code": "1004",
        "type": "msg",
        "count": "once",
        "topic": "/rms/ktp/data/service_status",
        "priority": 3,
        "status" : ["OnProgress"]
-     },
+     },   
      {
+       "group" : "service_status",
        "code": "1005",
-       "type": "siren",
-       "count": "once",
-       "topic": "/drive/info",      
-       "priority": 4,
-       "status" : ["straight","recovery"]
-     },
-     {
-       "code": "1006",
        "type": "msg",
        "count": "once",
        "topic": "/rms/ktp/data/service_status",
@@ -51,7 +48,8 @@
        "status" : ["End"]
      },
      {
-       "code": "1012",
+       "group" : "service_status",
+       "code": "1006",
        "type": "msg",
        "count": "once",
        "topic": "/rms/ktp/data/service_status",
@@ -60,7 +58,8 @@
        "status" : ["Started"]
      },
      {
-       "code": "1013",
+       "group" : "service_status",
+       "code": "1007",
        "type": "msg",
        "count": "once",
        "topic": "/rms/ktp/data/service_status",
@@ -69,7 +68,17 @@
        "status" : ["End"]
      },
      {
-       "code": "1020",
+       "group" : "service_status",
+       "code": "1008",
+       "type": "msg",
+       "count": "once",
+       "topic": "/rms/ktp/data/service_status",
+       "priority": 3,
+       "status" : ["Cancelled"]
+     },
+     {
+       "group" : "service_status",
+       "code": "1009",
        "type": "msg",
        "count": "once",
        "topic": "/rms/ktp/data/service_status",
@@ -77,7 +86,8 @@
        "status" : ["Failed"]
      },
      {
-       "code": "1007",
+       "group" : "rbt_status",
+       "code": "1020",
        "type": "msg",
        "count": "state",
        "topic": "/rms/ktp/data/rbt_status",
@@ -85,23 +95,26 @@
        "status" : ["0"]
      },
      {
+       "group" : "obstacle_status",
        "code": "2001",
        "type": "msg",
        "count": "state",
-       "topic": "/drive/obstacle/event",
+       "topic": "/drive/obstacle/status",
        "priority": 2,
        "status" : ["0","1"]
      },	
      {
+       "group" : "obstacle_status",
        "code": "2002",
        "type": "msg",
        "count": "state",
-       "topic": "/drive/obstacle/event",
+       "topic": "/drive/obstacle/status",
        "priority": 2,
        "status" : ["2"]
      },
      {
-       "code": "2003",
+       "group" : "drive_info",
+       "code": "2011",
        "type": "msg",
        "count": "state",
        "topic": "/drive/info",
@@ -109,7 +122,8 @@
        "status" : ["crossroads"]
      },	
      {
-       "code": "2004",
+       "group" : "drive_info",
+       "code": "2012",
        "type": "msg",
        "count": "state",
        "topic": "/drive/info",
@@ -117,12 +131,13 @@
        "status" : ["parking"]
      },	
      {
-       "code": "3001",
-       "type": "msg",
-       "count": "state",
-       "topic": "/sensor/battery/state",
-       "priority": 1,
-       "status" : ["90"]
+       "group" : "drive_info",
+       "code": "2010",
+       "type": "siren",
+       "count": "once",
+       "topic": "/drive/info",      
+       "priority": 4,
+       "status" : ["straight","recovery"]
      }
    ]
  }

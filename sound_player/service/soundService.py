@@ -55,15 +55,7 @@ class SoundService(Node):
         get_logger(self.get_name()).debug("_listener_service_status : " + str(status))
         
         try:
-            sound_list = list(filter(lambda sl: sl.code in {DEFINE.sound_code_1001,
-                                                            DEFINE.sound_code_1002,
-                                                            DEFINE.sound_code_1003,
-                                                            DEFINE.sound_code_1004,
-                                                            DEFINE.sound_code_1006,
-                                                            DEFINE.sound_code_1012,
-                                                            DEFINE.sound_code_1013,
-                                                            DEFINE.sound_code_1020},
-                                     self.sound_list))
+            sound_list = list(filter(lambda sl: sl.group == DEFINE.group_service_status, self.sound_list))
             get_logger(self.get_name()).debug("_listener_service_status  sound_list: " + str(sound_list))
             self._play_sound(status.task[0].task_code if status.task else None, status.task[0].status if status.task else None, sound_list)
             # self._play_sound(status.reserve, sound_list)
@@ -88,14 +80,11 @@ class SoundService(Node):
             if ((status.speaker % self.state_period) != 0):  # drive info의 index와 Drive Info 주기를 계산하여 지정 주기당 한번 출력.
                 return
                         
-            sound_list = list(filter(lambda sl: sl.code in {DEFINE.sound_code_1005,
-                                                            DEFINE.sound_code_2003,
-                                                            DEFINE.sound_code_2004},
-                                     self.sound_list))
-            self._play_sound(None,status.code, sound_list)
-            
+            sound_list = list(filter(lambda sl: sl.group == DEFINE.group_drive_info, self.sound_list))
+            self._play_sound(None, status.code, sound_list)
+             
             if (status.code == DEFINE.STRAIGHT or status.code == DEFINE.RECOVERY):
-                self._play_sound(None,None, sound_list)
+                self._play_sound(None, None, sound_list)
                 
         except Exception as e:
             get_logger(self.get_name()).error("_listener_drive_info : " + str(e))
@@ -135,9 +124,8 @@ class SoundService(Node):
         get_logger(self.get_name()).debug("_listener_rtb_status : " + str(status))
 
         try:            
-            sound_list = list(filter(lambda sl: sl.code in {DEFINE.sound_code_1007}, 
-                                     self.sound_list))
-            self._play_sound(None,str(status.drive_status), sound_list)
+            sound_list = list(filter(lambda sl: sl.group == DEFINE.group_rbt_status, self.sound_list))
+            self._play_sound(None, str(status.drive_status), sound_list)
                             
         except Exception as e:
             get_logger(self.get_name()).error("_listener_rtb_status : " + str(e))  
@@ -157,13 +145,11 @@ class SoundService(Node):
         get_logger(self.get_name()).debug("_listener_obstacle_status : " + str(status))
        
         try:
-            sound_list = list(filter(lambda sl: sl.code in {DEFINE.sound_code_2001,
-                                                            DEFINE.sound_code_2002},
-                                     self.sound_list))
+            sound_list = list(filter(lambda sl: sl.group == DEFINE.group_obstacle_status, self.sound_list))
             if (status.obstacle_value is True):
-                self._play_sound(None,status.obstacle_status, sound_list)  
+                self._play_sound(None, status.obstacle_status, sound_list)  
             else:
-                self._play_sound(None,None, sound_list)  # 출력되지 않을 조건
+                self._play_sound(None, None, sound_list)  # 출력되지 않을 조건
                     
         except Exception as e:
             get_logger(self.get_name()).error("_listener_obstacle_status : " + str(e))      
@@ -183,9 +169,7 @@ class SoundService(Node):
         get_logger(self.get_name()).debug("_listener_battery_status : " + str(status))
        
         try:
-            sound_list = list(filter(lambda sl: sl.code in {DEFINE.sound_code_3001},
-                                     self.sound_list))
-
+            sound_list = list(filter(lambda sl: sl.group == DEFINE.group_battery_status, self.sound_list))       
             if not sound_list:
                 get_logger(self.get_name()).error("not found battery code in sound option list : ")
                 return
@@ -193,9 +177,9 @@ class SoundService(Node):
             percentage = status.voltage
             
             if (percentage >= float(warning_level)):
-                self._play_sound(None,str(warning_level), sound_list) 
+                self._play_sound(None, str(warning_level), sound_list) 
             else:
-                self._play_sound(None,None, sound_list)  # 출력되지 않을 조건
+                self._play_sound(None, None, sound_list)  # 출력되지 않을 조건
                     
         except Exception as e:
             get_logger(self.get_name()).error("_listener_battery_status : " + str(e))
@@ -291,53 +275,35 @@ class SoundService(Node):
                              
             self.subscription_map[topic] = True
             
-            if (sound.code == DEFINE.sound_code_1001
-                    or sound.code == DEFINE.sound_code_1002
-                    or sound.code == DEFINE.sound_code_1003
-                    or sound.code == DEFINE.sound_code_1004
-                    or sound.code == DEFINE.sound_code_1006):
+            if (sound.group == DEFINE.group_service_status):
                 self.service_subscriber = self.create_subscription(
                     ServiceStatus, 
                     topic,  
                     self._listener_service_status, 
                     qos_profile                     
-                )                  
-                          
-            elif (sound.code == DEFINE.sound_code_1007):
+                )      
+            elif (sound.group == DEFINE.group_rbt_status):
                 self.rtbstatus_subscriber = self.create_subscription(
                     RbtStatus, 
                     topic, 
                     self._listener_rtb_status, 
                     qos_profile                   
                     )
-
-            elif (sound.code == DEFINE.sound_code_1005
-                    or sound.code == DEFINE.sound_code_2003):
+            elif (sound.group == DEFINE.group_drive_info):
                 self.drive_subscriber = self.create_subscription(
                         DriveState, 
                         topic, 
                         self._listener_drive_info, 
                         qos_profile 
                     )
-                
-            # elif (sound.code == DEFINE.sound_code_1020):
-            #     self.drive_subscriber = self.create_subscription(
-            #             String, 
-            #             topic, 
-            #             self._listener_error_info, 
-            #             qos_profile 
-            #         )
-                      
-            elif (sound.code == DEFINE.sound_code_2001
-                  or sound.code == DEFINE.sound_code_2001):
+            elif (sound.group == DEFINE.group_obstacle_status):    
                 self.opstacle_subscriber = self.create_subscription(
                     ObstacleStatus, 
                     topic, 
                     self._listener_obstacle_status,
                     qos_profile
                     )    
-
-            elif (sound.code == DEFINE.sound_code_3001):
+            elif (sound.group == DEFINE.group_battery_status):  
                 self.battery_subscriber = self.create_subscription(
                     BatteryState, 
                     topic, 

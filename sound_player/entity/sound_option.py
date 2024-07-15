@@ -3,6 +3,7 @@ from typing import List
 
 
 class SoundOption(BaseModel):
+    group: str
     code: str
     type: str
     count: str

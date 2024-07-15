@@ -23,7 +23,7 @@ class PlaySound:
         
         try:
           
-           if self.config["CONFIG"].get("SDL_AUDIODRIVER") is not None and self.config["CONFIG"].get("AUDIODEV") is not None :
+           if self.config["CONFIG"].get("SDL_AUDIODRIVER") is not None and self.config["CONFIG"].get("AUDIODEV") is not None:
                os.environ['SDL_AUDIODRIVER'] = self.config["CONFIG"].get("SDL_AUDIODRIVER") #'alsa'
                os.environ['AUDIODEV'] = self.config["CONFIG"].get("AUDIODEV") #'plughw:0,3'
                print(str("SDL_AUDIODRIVER : " + str(self.config["CONFIG"].get("SDL_AUDIODRIVER")) + 
