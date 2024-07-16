@@ -6,6 +6,7 @@ class define:
     SIREN = "siren"
     STRAIGHT = "straight"
     RECOVERY = "recovery"
+    READY = 0
     
     group_service_status = "service_status"
     group_rbt_status = "rbt_status"

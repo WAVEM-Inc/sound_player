@@ -84,7 +84,7 @@ class SoundService(Node):
             self._play_sound(None, status.code, sound_list)
              
             if (status.code == DEFINE.STRAIGHT or status.code == DEFINE.RECOVERY):
-                self._play_sound(None, None, sound_list)
+                self._reset_status( DEFINE.group_drive_info, sound_list)
                 
         except Exception as e:
             get_logger(self.get_name()).error("_listener_drive_info : " + str(e))
@@ -125,7 +125,10 @@ class SoundService(Node):
 
         try:            
             sound_list = list(filter(lambda sl: sl.group == DEFINE.group_rbt_status, self.sound_list))
-            self._play_sound(None, str(status.drive_status), sound_list)
+            if (status.drive_status == DEFINE.READY):
+                self._play_sound(None, str(status.drive_status), sound_list)
+            else:
+                self._reset_status( DEFINE.group_rbt_status, sound_list)
                             
         except Exception as e:
             get_logger(self.get_name()).error("_listener_rtb_status : " + str(e))  
@@ -149,7 +152,8 @@ class SoundService(Node):
             if (status.obstacle_value is True):
                 self._play_sound(None, status.obstacle_status, sound_list)  
             else:
-                self._play_sound(None, None, sound_list)  # 출력되지 않을 조건
+                self._reset_status( DEFINE.group_obstacle_status, sound_list)
+                #self._play_sound(None, None, sound_list)  # 출력되지 않을 조건
                     
         except Exception as e:
             get_logger(self.get_name()).error("_listener_obstacle_status : " + str(e))      
@@ -179,7 +183,8 @@ class SoundService(Node):
             if (percentage >= float(warning_level)):
                 self._play_sound(None, str(warning_level), sound_list) 
             else:
-                self._play_sound(None, None, sound_list)  # 출력되지 않을 조건
+                self._reset_status( DEFINE.group_battery_status, sound_list)
+                #self._play_sound(None, None, sound_list)  # 출력되지 않을 조건
                     
         except Exception as e:
             get_logger(self.get_name()).error("_listener_battery_status : " + str(e))
@@ -203,24 +208,27 @@ class SoundService(Node):
             for snd in sound_list:
                 if (str(msg_status) in snd.status and (snd.task_code is None or str(task_code) == snd.task_code)):
                     if (snd.count == "state" and self.play_state[snd.code] is False):  # 상태 변경 시 에만 출력 된다.
-                        get_logger(self.get_name()).info("_play_sound rejec: " + str(snd.count)+" / " + str(self.play_state[snd.code]))
+                        get_logger(self.get_name()).info("_play_sound reject: " + str(snd.count)+" / " + str(self.play_state[snd.code]))
                         return
                      
                     get_logger(self.get_name()).info(" play_sound : " + str(snd.code) + " / " + str(task_code) +
                                                      ",  priority : " + str(snd.priority) + "/"+str(self.play_state[snd.code]))  
                     self.play_state[snd.code] = False
-
                     self.sndPlayer.play_wav(snd.code, snd.priority)
                     break
-                elif (snd.count == "state"):  # 플레이 조건은 아닌데 count 가 "state" 이면 다음 조건에 도달시 플레이 되도록 True로 변경
-                    get_logger(self.get_name()).debug("플레이 조건은 아닌데 count 가 state 이면 다음 조건에 도달시 플레이 되도록 True로 변경")
-                    get_logger(self.get_name()).info(" reset : " + str(snd.code) + " / " + str(task_code) +
-                                                  ",  priority : " + str(snd.priority) + "/"+str(self.play_state[snd.code]))
-                    self.play_state[snd.code] = True
                 
         except Exception as e:
             get_logger(self.get_name()).error("_play_sound : " + str(e))
-
+    
+    def _reset_status(self, group_code, sound_list):
+        for snd in sound_list:
+            if (snd.count == "state" 
+                and snd.group == group_code):     
+                self.play_state[snd.code] = True                    
+                get_logger(self.get_name()).info(" reset : " + str(snd.code) + " / " + str(group_code) +
+                                                  ",  priority : " + str(snd.priority) + "/"+str(self.play_state[snd.code]))
+                       
+        
     def _check_topic_existence(self, desired_topic):
         """        
         Check whether topic is registered or not
