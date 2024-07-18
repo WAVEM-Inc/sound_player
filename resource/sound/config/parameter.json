@@ -138,7 +138,52 @@
        "topic": "/drive/info",      
        "priority": 4,
        "status" : ["straight","recovery"]
-     }
+     },
+     {
+      "group" : "error_status",
+      "code": "3010",
+      "type": "msg",
+      "count": "state",
+      "topic": "/rms/ktp/data/notify/error/status",      
+      "priority": 1,
+      "status" : ["410"]
+    },
+    {
+      "group" : "error_status",
+      "code": "3011",
+      "type": "msg",
+      "count": "state",
+      "topic": "/rms/ktp/data/notify/error/status",      
+      "priority": 1,
+      "status" : ["430"]
+    },
+    {
+      "group" : "error_status",
+      "code": "3012",
+      "type": "msg",
+      "count": "state",
+      "topic": "/rms/ktp/data/notify/error/status",      
+      "priority": 1,
+      "status" : ["440"]
+    },
+    {
+      "group" : "error_status",
+      "code": "3013",
+      "type": "msg",
+      "count": "state",
+      "topic": "/rms/ktp/data/notify/error/status",      
+      "priority": 1,
+      "status" : ["450"]
+    },
+    {
+      "group" : "error_status",
+      "code": "3014",
+      "type": "msg",
+      "count": "state",
+      "topic": "/rms/ktp/data/notify/error/status",      
+      "priority": 1,
+      "status" : ["451"]
+    }
    ]
  }
  

@@ -13,5 +13,6 @@ class define:
     group_obstacle_status = "obstacle_status"
     group_drive_info = "drive_info"
     group_battery_status = "battery_status"
+    group_error_status = "error_status"
     
 

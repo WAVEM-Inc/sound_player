@@ -68,7 +68,7 @@ class SoundService(Node):
         callback function for DriveState
 
         Args:
-            mstatus : topic message
+            status : topic message
 
         Returns:
            
@@ -114,7 +114,7 @@ class SoundService(Node):
         callback function for RbtStatus
 
         Args:
-            mstatus : topic message
+            status : topic message
 
         Returns:
            
@@ -138,7 +138,7 @@ class SoundService(Node):
         callback function for ObstacleStatus
 
         Args:
-            mstatus : topic message
+            status : topic message
 
         Returns:
            
@@ -156,14 +156,35 @@ class SoundService(Node):
                 #self._play_sound(None, None, sound_list)  # 출력되지 않을 조건
                     
         except Exception as e:
-            get_logger(self.get_name()).error("_listener_obstacle_status : " + str(e))      
+            get_logger(self.get_name()).error("_listener_obstacle_status : " + str(e))          
     
+    def _listener_error_status(self, msg: String) -> None:
+        """        
+        callback function for ErrorStatus
+
+        Args:
+            status : topic message
+
+        Returns:
+           
+        Raises:
+
+        """    
+        get_logger(self.get_name()).debug("_listener_error_status : " + str(msg))
+       
+        try:
+            sound_list = list(filter(lambda sl: sl.group == DEFINE.group_error_status, self.sound_list))
+            self._play_sound(None, msg.data, sound_list)  
+                    
+        except Exception as e:
+            get_logger(self.get_name()).error("_listener_error_status : " + str(e))      
+            
     def _listener_battery_status(self, status: BatteryState) -> None:
         """        
         callback function for BatteryState
 
         Args:
-            mstatus : topic message
+            status : topic message
 
         Returns:
            
@@ -309,6 +330,13 @@ class SoundService(Node):
                     ObstacleStatus, 
                     topic, 
                     self._listener_obstacle_status,
+                    qos_profile
+                    )    
+            elif (sound.group == DEFINE.group_error_status):    
+                self.opstacle_subscriber = self.create_subscription(
+                    String, 
+                    topic, 
+                    self._listener_error_status,
                     qos_profile
                     )    
             elif (sound.group == DEFINE.group_battery_status):  
