@@ -192,8 +192,16 @@
       "topic": "/rms/ktp/data/notify/error/status",
       "priority": 1,
       "status" : ["500"]
+    },
+    {
+      "group" : "error_status",
+      "code": "3016",
+      "type": "msg",
+      "count": "once",
+      "topic": "/rms/ktp/data/notify/error/status",      
+      "priority": 1,
+      "status" : ["210"]
     }
-
    ]
  }
  
