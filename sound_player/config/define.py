@@ -6,12 +6,15 @@ class define:
     SIREN = "siren"
     STRAIGHT = "straight"
     RECOVERY = "recovery"
+    GEOFENCE = "2"
     READY = 0
     
-    group_service_status = "service_status"
-    group_rbt_status = "rbt_status"
-    group_obstacle_status = "obstacle_status"
-    group_drive_info = "drive_info"
+    # group_service_status = "service_status"
+    # group_rbt_status = "rbt_status"
+    # group_obstacle_status = "obstacle_status"
+    group_follow_cmd = "follow_cmd"
+    group_follow_info = "follow_info"
+    group_mission_result = "mission_result"
     group_battery_status = "battery_status"
     group_error_status = "error_status"
     

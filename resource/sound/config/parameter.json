@@ -1,206 +1,41 @@
 {
   "sound": [
-     {
-       "group" : "service_status",
+      {
+       "group" : "follow_cmd",
        "code": "1001",
        "type": "msg",
        "count": "once",
-       "topic": "/rms/ktp/data/service_status",
-       "priority": 3,      
-       "status" : ["SourceArrived"]
-     },
-     {    
-       "group" : "service_status",
-       "code": "1002",
-       "type": "msg",
-       "count": "once",
-       "topic": "/rms/ktp/data/service_status",
-       "priority": 3,
-       "status" : ["DestArrived"]
+       "topic": "/follow/ui/client",
+       "priority": 2,
+       "status" : ["1"]
      },
      {
-       "group" : "service_status",
-       "code": "1003",
-       "type": "msg",
-       "count": "once",
-       "topic": "/rms/ktp/data/service_status",
-       "task_code": "delivering",
-       "priority": 3,
-       "status" : ["Started"]
-     },
-     {
-       "group" : "service_status",
-       "code": "1004",
-       "type": "msg",
-       "count": "once",
-       "topic": "/rms/ktp/data/service_status",
-       "priority": 3,
-       "status" : ["OnProgress"]
-     },   
-     {
-       "group" : "service_status",
+       "group" : "follow_info",
        "code": "1005",
        "type": "msg",
-       "count": "once",
-       "topic": "/rms/ktp/data/service_status",
-       "task_code": "delivering",
-       "priority": 3,
-       "status" : ["End"]
-     },
-     {
-       "group" : "service_status",
-       "code": "1006",
-       "type": "msg",
-       "count": "once",
-       "topic": "/rms/ktp/data/service_status",
-       "priority": 3,
-       "task_code": "returning",
-       "status" : ["Started"]
-     },
-     {
-       "group" : "service_status",
-       "code": "1007",
-       "type": "msg",
-       "count": "once",
-       "topic": "/rms/ktp/data/service_status",
-       "task_code": "returning",
-       "priority": 3,
-       "status" : ["End"]
-     },
-     {
-       "group" : "service_status",
-       "code": "1008",
-       "type": "msg",
-       "count": "once",
-       "topic": "/rms/ktp/data/service_status",
-       "priority": 3,
-       "status" : ["Cancelled"]
-     },
-     {
-       "group" : "service_status",
-       "code": "1009",
-       "type": "msg",
-       "count": "once",
-       "topic": "/rms/ktp/data/service_status",
-       "priority": 1,
-       "status" : ["Failed"]
-     },
-     {
-       "group" : "rbt_status",
-       "code": "1020",
-       "type": "msg",
        "count": "state",
-       "topic": "/rms/ktp/data/rbt_status",
-       "priority": 3,
-       "status" : ["0"]
-     },
-     {
-       "group" : "obstacle_status",
-       "code": "2001",
-       "type": "msg",
-       "count": "state",
-       "topic": "/drive/obstacle/status",
+       "topic": "/follow/detectuser",
        "priority": 2,
-       "status" : ["0","1"]
-     },	
+       "status" : ["2"]
+     },   
      {
-       "group" : "obstacle_status",
+       "group" : "mission_result",
        "code": "2002",
        "type": "msg",
        "count": "state",
-       "topic": "/drive/obstacle/status",
+       "topic": "/device/mission/result",
+       "task_code": "1",
        "priority": 2,
-       "status" : ["2"]
-     },
-     {
-       "group" : "drive_info",
-       "code": "2011",
-       "type": "msg",
-       "count": "state",
-       "topic": "/drive/info",
-       "priority": 1,
-       "status" : ["crossroads"]
-     },	
-     {
-       "group" : "drive_info",
-       "code": "2012",
-       "type": "msg",
-       "count": "state",
-       "topic": "/drive/info",
-       "priority": 1,
-       "status" : ["parking"]
-     },	
-     {
-       "group" : "drive_info",
-       "code": "2010",
-       "type": "siren",
-       "count": "once",
-       "topic": "/drive/info",      
-       "priority": 4,
-       "status" : ["straight","recovery"]
-     },
+       "status" : ["1"]
+     },     
      {
       "group" : "error_status",
-      "code": "3010",
-      "type": "msg",
-      "count": "state",
-      "topic": "/rms/ktp/data/notify/error/status",      
-      "priority": 1,
-      "status" : ["410"]
-    },
-    {
-      "group" : "error_status",
-      "code": "3011",
-      "type": "msg",
-      "count": "state",
-      "topic": "/rms/ktp/data/notify/error/status",      
-      "priority": 1,
-      "status" : ["430"]
-    },
-    {
-      "group" : "error_status",
-      "code": "3012",
-      "type": "msg",
-      "count": "state",
-      "topic": "/rms/ktp/data/notify/error/status",      
-      "priority": 1,
-      "status" : ["440"]
-    },
-    {
-      "group" : "error_status",
-      "code": "3013",
-      "type": "msg",
-      "count": "state",
-      "topic": "/rms/ktp/data/notify/error/status",      
-      "priority": 1,
-      "status" : ["450"]
-    },
-    {
-      "group" : "error_status",
-      "code": "3014",
-      "type": "msg",
-      "count": "state",
-      "topic": "/rms/ktp/data/notify/error/status",      
-      "priority": 1,
-      "status" : ["451"]
-    },
-    {
-      "group" : "error_status",
-      "code": "3015",
-      "type": "msg",
-      "count": "state",
-      "topic": "/rms/ktp/data/notify/error/status",
-      "priority": 1,
-      "status" : ["500"]
-    },
-    {
-      "group" : "error_status",
-      "code": "3016",
+      "code": "2005",
       "type": "msg",
       "count": "once",
-      "topic": "/rms/ktp/data/notify/error/status",      
+      "topic": "/error/status",      
       "priority": 1,
-      "status" : ["210"]
+      "status" : ["205"]
     }
    ]
  }
