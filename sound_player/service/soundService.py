@@ -98,7 +98,7 @@ class SoundService(Node):
                 self.follow_standby = False   #다른 추종 상태 진입시 감지 중 사운드 중지
                 get_logger(self.get_name()).debug("다른 추종 상태 진입시 감지 중 사운드 중지")                
                 
-            get_logger(self.get_name()).info(str(status.detect_status) + ":" + DEFINE.GEOFENCE)
+            #get_logger(self.get_name()).debug(str(status.detect_status) + ":" + DEFINE.GEOFENCE)
                 
             if (int(status.detect_status) != int(DEFINE.GEOFENCE)):
                 self._reset_status(DEFINE.group_follow_info, sound_list)
@@ -150,10 +150,10 @@ class SoundService(Node):
             for snd in sound_list:
                 if (str(msg_status) in snd.status and (snd.task_code is None or str(task_code) == snd.task_code)):
                     if (snd.count == "state" and self.play_state[snd.code] is False):  # 상태 변경 시 에만 출력 된다.
-                        get_logger(self.get_name()).info("_play_sound reject: " + str(snd.count)+" / " + str(self.play_state[snd.code]))
+                        get_logger(self.get_name()).debug("_play_sound reject: " + str(snd.count)+" / " + str(self.play_state[snd.code]))
                         return
                      
-                    get_logger(self.get_name()).info(" play_sound : " + str(snd.code) + " / " + str(task_code) +
+                    get_logger(self.get_name()).debug(" play_sound : " + str(snd.code) + " / " + str(task_code) +
                                                      ",  priority : " + str(snd.priority) + "/"+str(self.play_state[snd.code]))  
                     self.play_state[snd.code] = False
                     self.sndPlayer.play_wav(snd.code, snd.priority)
@@ -167,7 +167,7 @@ class SoundService(Node):
             if (snd.count == "state" 
                 and snd.group == group_code):     
                 self.play_state[snd.code] = True                    
-                get_logger(self.get_name()).info(" reset : " + str(snd.code) + " / " + str(group_code) +
+                get_logger(self.get_name()).debug(" reset : " + str(snd.code) + " / " + str(group_code) +
                                                   ",  priority : " + str(snd.priority) + "/"+str(self.play_state[snd.code]))
                                
     def _check_topic_existence(self, desired_topic):
