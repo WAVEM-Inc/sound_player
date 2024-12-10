@@ -100,7 +100,7 @@ class SoundService(Node):
                 
             #get_logger(self.get_name()).debug(str(status.detect_status) + ":" + DEFINE.GEOFENCE)
                 
-            if (int(status.detect_status) != int(DEFINE.GEOFENCE)):
+            if (int(status.detect_user) != int(DEFINE.FOLLOW)):
                 self._reset_status(DEFINE.group_follow_info, sound_list)
                      
             get_logger(self.get_name()).debug("_listener_flollow_info  sound_list: " + str(sound_list))

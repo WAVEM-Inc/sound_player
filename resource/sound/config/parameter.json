@@ -23,7 +23,7 @@
       "group" : "follow_info",
       "code": "1005",
       "type": "msg",
-      "count": "state",
+      "count": "once",
       "topic": "/follow/detectuser",
       "task_code": "0",
       "priority": 2,
