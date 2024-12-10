@@ -7,6 +7,8 @@ class define:
     STRAIGHT = "straight"
     RECOVERY = "recovery"
     GEOFENCE = "2"
+    detect_user_standby = 2 #사용자 인식 대기
+    detect_user_start = 1  #인식 상태
     READY = 0
     
     # group_service_status = "service_status"

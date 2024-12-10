@@ -32,7 +32,8 @@ class Config:
         
         self.state_period = self.config["CONFIG"].getint("state_period")
         self.volume = self.config["CONFIG"].get("sound_volume")
-
+        
+        self.detect_sleep = self.config["CONFIG"].get("detect_sleep")
     
     def _load_option_file(self, filepath, filename):
         """
@@ -72,5 +73,6 @@ class Config:
     
     def get_sound_volume(self):
         return self.volume
-
-
+    
+    def get_detect_sleep(self):
+        return self.detect_sleep

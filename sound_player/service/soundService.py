@@ -11,7 +11,8 @@ from std_msgs.msg import String
 from ..config.config import Config
 from .play_sound import PlaySound
 from ..config.define import define as DEFINE
-import os
+import time
+
 
 class SoundService(Node):
     """
@@ -21,7 +22,7 @@ class SoundService(Node):
        sndPlayer : sound play object
        play_state : play flag for state changing
     """
-   
+    
     def __init__(self):
         super().__init__("SoundService")
 
@@ -32,10 +33,13 @@ class SoundService(Node):
         conf = Config()
         self.sound_list = conf.get_sound_list()   
         self.state_period = conf.get_state_period()
+        self.detect_sleep = conf.get_detect_sleep()
                
         self.play_state = {}  # 상태 변경시 한번만 실행하기 위한 플래그
         self.subscription_map = {}
         
+        self.follow_standby_count = 0
+         
         self._register_subscribe(self.sound_list)
                     
     def _listener_flollow_cmd(self, status: UiClient) -> None:
@@ -56,7 +60,18 @@ class SoundService(Node):
         try:
             sound_list = list(filter(lambda sl: sl.group == DEFINE.group_follow_cmd, self.sound_list))
             get_logger(self.get_name()).debug("_listener_flollow_cmd  sound_list: " + str(sound_list))
+            
+            if status.cmd == 1: 
+                self.follow_standby = True
+    
+            if self.follow_standby is False:
+                return 
+
             self._play_sound(None, status.cmd, sound_list)  
+            
+            time.sleep(int(self.detect_sleep))
+            status.cmd = 2   #'{"cmd":2}'
+            self.sound_publisher.publish(status)                
 
         except Exception as e:
             get_logger(self.get_name()).error("_listener_flollow_cmd : " + str(e))
@@ -79,6 +94,10 @@ class SoundService(Node):
         try:
             sound_list = list(filter(lambda sl: sl.group == DEFINE.group_follow_info, self.sound_list))           
             
+            if (status.detect_user not in (DEFINE.detect_user_standby, DEFINE.detect_user_start)):
+                self.follow_standby = False   #다른 추종 상태 진입시 감지 중 사운드 중지
+                get_logger(self.get_name()).debug("다른 추종 상태 진입시 감지 중 사운드 중지")                
+                
             get_logger(self.get_name()).info(str(status.detect_status) + ":" + DEFINE.GEOFENCE)
                 
             if (int(status.detect_status) != int(DEFINE.GEOFENCE)):
@@ -86,37 +105,11 @@ class SoundService(Node):
                      
             get_logger(self.get_name()).debug("_listener_flollow_info  sound_list: " + str(sound_list))
             #self._play_sound(status.task_code if status.task_code else None, status.status if status.status else None, sound_list)
-            self._play_sound(None, status.detect_status, sound_list)  
+            self._play_sound(status.detect_user, status.detect_status, sound_list)  
             
         except Exception as e:
             get_logger(self.get_name()).error("_listener_flollow_info : " + str(e))       
-                        
-    # def _listener_mission_result(self, status: MissionResult) -> None:
-    #     """
-    #     callback function for DriveState
-
-    #     Args:
-    #         status : topic message
-
-    #     Returns:
-           
-    #     Raises:
-
-    #     """   
-    #     try:
-    #         get_logger(self.get_name()).debug("_listener_mission_result : " + str(status))
-    #         if ((status.speaker % self.state_period) != 0):  # drive info의 index와 Drive Info 주기를 계산하여 지정 주기당 한번 출력.
-    #             return
-                        
-    #         sound_list = list(filter(lambda sl: sl.group == DEFINE.group_mission_result, self.sound_list))
-    #         self._play_sound(status.task_code if status.task_code else None, status.status if status.status else None, sound_list)
-             
-    #         # if (status.code == DEFINE.STRAIGHT or status.code == DEFINE.RECOVERY):
-    #         #     self._reset_status( DEFINE.group_drive_info, sound_list)
-                
-    #     except Exception as e:
-    #         get_logger(self.get_name()).error("_listener_mission_result : " + str(e))
-                               
+                                   
     def _listener_error_status(self, msg: String) -> None:
         """        
         callback function for ErrorStatus
@@ -138,88 +131,6 @@ class SoundService(Node):
         except Exception as e:
             get_logger(self.get_name()).error("_listener_error_status : " + str(e))   
             
-    # def _listener_rtb_status(self, status: RbtStatus) -> None:
-    #     """
-    #     callback function for RbtStatus
-
-    #     Args:
-    #         status : topic message
-
-    #     Returns:
-           
-    #     Raises:
-
-    #     """           
-    #     get_logger(self.get_name()).debug("_listener_rtb_status : " + str(status))
-
-    #     try:            
-    #         sound_list = list(filter(lambda sl: sl.group == DEFINE.group_rbt_status, self.sound_list))
-    #         if (status.drive_status == DEFINE.READY):
-    #             self._play_sound(None, str(status.drive_status), sound_list)
-    #         else:
-    #             self._reset_status( DEFINE.group_rbt_status, sound_list)
-                            
-    #     except Exception as e:
-    #         get_logger(self.get_name()).error("_listener_rtb_status : " + str(e))  
-    
-    # def _listener_obstacle_status(self, status: ObstacleStatus) -> None:
-    #     """        
-    #     callback function for ObstacleStatus
-
-    #     Args:
-    #         status : topic message
-
-    #     Returns:
-           
-    #     Raises:
-
-    #     """    
-    #     get_logger(self.get_name()).debug("_listener_obstacle_status : " + str(status))
-       
-    #     try:
-    #         sound_list = list(filter(lambda sl: sl.group == DEFINE.group_obstacle_status, self.sound_list))
-    #         if (status.obstacle_value is True):
-    #             self._play_sound(None, status.obstacle_status, sound_list)  
-    #         else:
-    #             self._reset_status( DEFINE.group_obstacle_status, sound_list)
-    #             #self._play_sound(None, None, sound_list)  # 출력되지 않을 조건
-                    
-    #     except Exception as e:
-    #         get_logger(self.get_name()).error("_listener_obstacle_status : " + str(e))          
-   
-            
-            
-    # def _listener_battery_status(self, status: BatteryState) -> None:
-    #     """        
-    #     callback function for BatteryState
-
-    #     Args:
-    #         status : topic message
-
-    #     Returns:
-           
-    #     Raises:
-
-    #     """    
-    #     get_logger(self.get_name()).debug("_listener_battery_status : " + str(status))
-       
-    #     try:
-    #         sound_list = list(filter(lambda sl: sl.group == DEFINE.group_battery_status, self.sound_list))       
-    #         if not sound_list:
-    #             get_logger(self.get_name()).error("not found battery code in sound option list : ")
-    #             return
-    #         warning_level = sound_list[0].status[0]  # 배터리 한계 기준 값
-    #         percentage = status.voltage
-            
-    #         if (percentage >= float(warning_level)):
-    #             self._play_sound(None, str(warning_level), sound_list) 
-    #         else:
-    #             self._reset_status( DEFINE.group_battery_status, sound_list)
-    #             #self._play_sound(None, None, sound_list)  # 출력되지 않을 조건
-                    
-    #     except Exception as e:
-    #         get_logger(self.get_name()).error("_listener_battery_status : " + str(e))
-
     def _play_sound(self, task_code, msg_status, sound_list):
         """        
         play sound 
@@ -258,8 +169,7 @@ class SoundService(Node):
                 self.play_state[snd.code] = True                    
                 get_logger(self.get_name()).info(" reset : " + str(snd.code) + " / " + str(group_code) +
                                                   ",  priority : " + str(snd.priority) + "/"+str(self.play_state[snd.code]))
-                       
-        
+                               
     def _check_topic_existence(self, desired_topic):
         """        
         Check whether topic is registered or not
@@ -321,6 +231,8 @@ class SoundService(Node):
                     self._listener_flollow_cmd, 
                     qos_profile                   
                 )                  
+                self.sound_publisher = self.create_publisher(UiClient, topic, 10)
+                
             elif (sound.group == DEFINE.group_follow_info):
                 self.service_subscriber = self.create_subscription(
                     Detect, 
@@ -351,6 +263,9 @@ class SoundService(Node):
             #         )
             else:
                 get_logger(self.get_name()).error("topic : " + topic + " is an undefined topic.")
+            
+  
+      
             
             if (self._check_topic_existence(topic) is True):
                 get_logger(self.get_name()).info("topic : " + topic + "   (subscribe)")

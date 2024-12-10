@@ -7,17 +7,28 @@
        "count": "once",
        "topic": "/follow/ui/client",
        "priority": 2,
-       "status" : ["1"]
+       "status" : ["1","2"]
      },
      {
        "group" : "follow_info",
-       "code": "1005",
+       "code": "1002",
        "type": "msg",
        "count": "state",
        "topic": "/follow/detectuser",
-       "priority": 2,
-       "status" : ["2"]
+       "task_code": "3",
+       "priority": 3,
+       "status" : ["0"]
      },   
+     {
+      "group" : "follow_info",
+      "code": "1005",
+      "type": "msg",
+      "count": "state",
+      "topic": "/follow/detectuser",
+      "task_code": "0",
+      "priority": 2,
+      "status" : ["2"]
+    },   
      {
        "group" : "mission_result",
        "code": "2002",
