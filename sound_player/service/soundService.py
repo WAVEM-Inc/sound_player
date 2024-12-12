@@ -38,7 +38,7 @@ class SoundService(Node):
         self.play_state = {}  # 상태 변경시 한번만 실행하기 위한 플래그
         self.subscription_map = {}
         
-        self.follow_standby_count = 0
+        self.follow_running = False
          
         self._register_subscribe(self.sound_list)
                     
@@ -63,13 +63,18 @@ class SoundService(Node):
             
             if status.cmd == 1: 
                 self.follow_standby = True
+                self.follow_running = True
     
             if self.follow_standby is False:
-                return 
+                return
 
             self._play_sound(None, status.cmd, sound_list)  
             
             time.sleep(int(self.detect_sleep))
+            
+            if self.follow_standby is False:
+                return
+                
             status.cmd = 2   #'{"cmd":2}'
             self.sound_publisher.publish(status)                
 
@@ -89,26 +94,33 @@ class SoundService(Node):
 
         """
         
-        get_logger(self.get_name()).debug("_listener_flollow_info : " + str(status))
+        get_logger(self.get_name()).info("_listener_flollow_info : " + str(status) + 
+                                          " / follow runnung : "+str(self.follow_running))
         
+        if (self.follow_running is False):
+            return
+
         try:
             sound_list = list(filter(lambda sl: sl.group == DEFINE.group_follow_info, self.sound_list))           
             
             if (status.detect_user not in (DEFINE.detect_user_standby, DEFINE.detect_user_start)):
-                self.follow_standby = False   #다른 추종 상태 진입시 감지 중 사운드 중지
-                get_logger(self.get_name()).debug("다른 추종 상태 진입시 감지 중 사운드 중지")                
-                
+                self.follow_standby = False   #다른 추종 상태 진입시 감지 중 비프음 사운드 중지 - _listener_flollow_cmd 가 호출되지 않도록함
+                get_logger(self.get_name()).debug("다른 추종 상태 진입시 감지 중 비프음 사운드 중지")
+                                
             #get_logger(self.get_name()).debug(str(status.detect_status) + ":" + DEFINE.GEOFENCE)
-                
-            if (int(status.detect_user) != int(DEFINE.FOLLOW)):
+            if (int(status.detect_user) != int(DEFINE.FOLLOW) and int(status.detect_status) != int(DEFINE.GEOFENCE)):
                 self._reset_status(DEFINE.group_follow_info, sound_list)
+            
+            if ((int(status.detect_user) == int(DEFINE.CLOSE) and int(status.detect_status) == int(DEFINE.USER_END))
+                or (int(status.detect_user) == int(DEFINE.CLOSE) and int(status.detect_status) == int(DEFINE.FAIL_END))) : #정지 이면
+                   self.follow_running = False
                      
             get_logger(self.get_name()).debug("_listener_flollow_info  sound_list: " + str(sound_list))
             #self._play_sound(status.task_code if status.task_code else None, status.status if status.status else None, sound_list)
             self._play_sound(status.detect_user, status.detect_status, sound_list)  
             
         except Exception as e:
-            get_logger(self.get_name()).error("_listener_flollow_info : " + str(e))       
+            get_logger(self.get_name()).error("_listener_flollow_info : " + str(e))      
                                    
     def _listener_error_status(self, msg: String) -> None:
         """        
@@ -167,7 +179,7 @@ class SoundService(Node):
             if (snd.count == "state" 
                 and snd.group == group_code):     
                 self.play_state[snd.code] = True                    
-                get_logger(self.get_name()).debug(" reset : " + str(snd.code) + " / " + str(group_code) +
+                get_logger(self.get_name()).info(" reset : " + str(snd.code) + " / " + str(group_code) +
                                                   ",  priority : " + str(snd.priority) + "/"+str(self.play_state[snd.code]))
                                
     def _check_topic_existence(self, desired_topic):
