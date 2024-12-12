@@ -94,7 +94,7 @@ class SoundService(Node):
 
         """
         
-        get_logger(self.get_name()).info("_listener_flollow_info : " + str(status) + 
+        get_logger(self.get_name()).debug("_listener_flollow_info : " + str(status) + 
                                           " / follow runnung : "+str(self.follow_running))
         
         if (self.follow_running is False):
@@ -157,16 +157,18 @@ class SoundService(Node):
 
         """         
         try:    
-            get_logger(self.get_name()).info("_play_sound msg_status : " 
+            get_logger(self.get_name()).debug("_play_sound msg_status : " 
                                               + str(msg_status) + " / " + str(task_code) + " / " + str(sound_list))            
             for snd in sound_list:
                 if (str(msg_status) in snd.status and (snd.task_code is None or str(task_code) == snd.task_code)):
                     if (snd.count == "state" and self.play_state[snd.code] is False):  # 상태 변경 시 에만 출력 된다.
                         get_logger(self.get_name()).debug("_play_sound reject: " + str(snd.count)+" / " + str(self.play_state[snd.code]))
                         return
-                     
+                    
                     get_logger(self.get_name()).debug(" play_sound : " + str(snd.code) + " / " + str(task_code) +
                                                      ",  priority : " + str(snd.priority) + "/"+str(self.play_state[snd.code]))  
+                    
+                    get_logger(self.get_name()).info("play_wav: " + str(msg_status) + " / " + str(task_code) + " / " + str(snd))      
                     self.play_state[snd.code] = False
                     self.sndPlayer.play_wav(snd.code, snd.priority)
                     break
@@ -179,7 +181,7 @@ class SoundService(Node):
             if (snd.count == "state" 
                 and snd.group == group_code):     
                 self.play_state[snd.code] = True                    
-                get_logger(self.get_name()).info(" reset : " + str(snd.code) + " / " + str(group_code) +
+                get_logger(self.get_name()).debug(" reset : " + str(snd.code) + " / " + str(group_code) +
                                                   ",  priority : " + str(snd.priority) + "/"+str(self.play_state[snd.code]))
                                
     def _check_topic_existence(self, desired_topic):
