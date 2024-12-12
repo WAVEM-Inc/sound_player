@@ -6,7 +6,7 @@
        "type": "msg",
        "count": "once",
        "topic": "/follow/ui/client",
-       "priority": 2,
+       "priority": 3,
        "status" : ["1","2"]
      },
      {
@@ -16,7 +16,7 @@
        "count": "state",
        "topic": "/follow/detectuser",
        "task_code": "3",
-       "priority": 3,
+       "priority": 2,
        "status" : ["0"]
      },   
      {
@@ -29,16 +29,6 @@
       "priority": 2,
       "status" : ["2"]
     },   
-     {
-       "group" : "mission_result",
-       "code": "2002",
-       "type": "msg",
-       "count": "state",
-       "topic": "/device/mission/result",
-       "task_code": "1",
-       "priority": 2,
-       "status" : ["1"]
-     },     
      {
       "group" : "error_status",
       "code": "2005",

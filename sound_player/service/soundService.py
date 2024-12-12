@@ -26,7 +26,7 @@ class SoundService(Node):
     def __init__(self):
         super().__init__("SoundService")
 
-        self.get_logger().info("Start sound play service")
+        self.get_logger().info("Start sound play service - " + str(self.get_name()))
        
         self.sndPlayer = PlaySound()
 
@@ -211,7 +211,7 @@ class SoundService(Node):
         """
         self.play_state["val"] = True
                         
-        qos_profile = QoSProfile(depth=10)
+        qos_profile = QoSProfile(depth=1)
        
         for sound in sound_list:
             topic = sound.topic
@@ -229,7 +229,7 @@ class SoundService(Node):
                     UiClient, 
                     topic,  
                     self._listener_flollow_cmd, 
-                    qos_profile                   
+                    qos_profile              
                 )                  
                 self.sound_publisher = self.create_publisher(UiClient, topic, 10)
                 
@@ -238,7 +238,7 @@ class SoundService(Node):
                     Detect, 
                     topic,  
                     self._listener_flollow_info, 
-                    qos_profile                     
+                    qos_profile                  
                 )      
             # elif (sound.group == DEFINE.group_mission_result):
             #     self.drive_subscriber = self.create_subscription(

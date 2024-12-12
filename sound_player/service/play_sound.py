@@ -23,37 +23,38 @@ class PlaySound:
         
         try:
           
-           if self.config["CONFIG"].get("SDL_AUDIODRIVER") is not None and self.config["CONFIG"].get("AUDIODEV") is not None:
-               os.environ['SDL_AUDIODRIVER'] = self.config["CONFIG"].get("SDL_AUDIODRIVER") #'alsa'
-               os.environ['AUDIODEV'] = self.config["CONFIG"].get("AUDIODEV") #'plughw:0,3'
-               print(str("SDL_AUDIODRIVER : " + str(self.config["CONFIG"].get("SDL_AUDIODRIVER")) + 
-                         " / AUDIODEV : " + str(self.config["CONFIG"].get("AUDIODEV"))))
+            if self.config["CONFIG"].get("SDL_AUDIODRIVER") is not None and self.config["CONFIG"].get("AUDIODEV") is not None:
+                os.environ['SDL_AUDIODRIVER'] = self.config["CONFIG"].get("SDL_AUDIODRIVER")  #'alsa'
+                os.environ['AUDIODEV'] = self.config["CONFIG"].get("AUDIODEV")  #'plughw:0,3'
+                print(str("SDL_AUDIODRIVER : " + str(self.config["CONFIG"].get("SDL_AUDIODRIVER")) + 
+                          " / AUDIODEV : " + str(self.config["CONFIG"].get("AUDIODEV"))))
 
-           self.play_priority = 100  # max priority for init value
+            self.play_priority = 100  # max priority for init value
+
+            if (self.config["CONFIG"].get("sound_volume") is not None and self.config["CONFIG"].get("sound_volume").isdecimal()):
+                self.volume = int(self.config["CONFIG"].get("sound_volume"))
                 
-           # Pygame 초기화
-           pygame.init()
-           pygame.mixer.init()
-    
+                if (self.volume > DEFINE.sound_vloume_max):    
+                    self.volume = DEFINE.sound_vloume_max
+                elif (self.volume < 0):
+                    self.volume = 0            
+            else:
+                self.volume = DEFINE.sound_vloume_max
+               
+            # Pygame 초기화
+            pygame.init()
+            pygame.mixer.init()
+            
+            #pygame.mixer.music.set_volume(float(self.volume)/10.0)
+
         except Exception as e:
             print(str(e))
             return None   
         # self.volume = DEFINE.sound_vloume_max   # default value - max volume
-        
-        # try:                    
-        #     self.volume = self.config["CONFIG"].get("sound_volume")
-        #     # print("volume -- " + str(self.volume))
-        #     get_logger(self.get_name()).info("volume -- " + str(self.volume))
-            
-        #     if (self.volume is None or self.volume.isdecimal() is False or self.volume > "10"):
-        #         self.volume = DEFINE.sound_vloume_max
-        #     elif (self.volume < "0"):
-        #         self.volume = 0
-        # except Exception as e:
-        #     print(str(e))
-                       
-        # pygame.mixer.music.set_volume(float(self.volume)/10.0)
-    
+       
+    def getVolume(self):
+        return self.volume
+     
     def __del__(self):
         pygame.quit()
               
@@ -68,8 +69,9 @@ class PlaySound:
             # WAV 파일 재생
             wav_file_path = self.file_path + code + ".wav"
             pygame.mixer.music.load(wav_file_path)
+            pygame.mixer.music.set_volume(float(self.volume)/10.0)
             pygame.mixer.music.play()
-
+         
             # 재생이 끝날 때까지 대기
             # while pygame.mixer.music.get_busy():
             #    pygame.time.Clock().tick(10)
