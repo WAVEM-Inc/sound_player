@@ -5,6 +5,8 @@ from rclpy.logging import get_logger
 # from cmd_msgs.msg import MissionResult
 from follow_msgs.msg import Detect
 from follow_msgs.msg import UiClient
+# from nav_msgs import Odometry
+ 
 #from sensor_msgs.msg import BatteryState
 from std_msgs.msg import String
 
@@ -268,6 +270,14 @@ class SoundService(Node):
                     self._listener_error_status,
                     qos_profile
                     )    
+            # elif (sound.group == DEFINE.group_backwards_warning):    
+            #     self.opstacle_subscriber = self.create_subscription(
+            #         Odometry, 
+            #         topic, 
+            #         self._listener_backwards_warning,
+            #         qos_profile
+            #         )                  
+                
             # elif (sound.group == DEFINE.group_battery_status):  
             #     self.battery_subscriber = self.create_subscription(
             #         BatteryState, 

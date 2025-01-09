@@ -37,6 +37,24 @@
       "topic": "/error/status",      
       "priority": 1,
       "status" : ["205"]
+    },
+    {
+     "group" : "error_status",
+     "code": "2006",
+     "type": "msg",
+     "count": "once",
+     "topic": "/error/status",      
+     "priority": 1,
+     "status" : ["206"]
+    },
+    {
+     "group" : "backwards_warning",
+     "code": "2010",
+     "type": "msg",
+     "count": "once",
+     "topic": "/odom",      
+     "priority": 1,
+     "status" : ["0"]
     }
    ]
  }
